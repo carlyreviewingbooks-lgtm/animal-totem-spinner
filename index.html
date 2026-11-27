@@ -5,127 +5,173 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Animal Totem Spinner</title>
 <style>
-body{margin:0;background:#0f051a;color:#f0e6ff;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:20px;text-align:center;}
-h1{color:#d4af37;letter-spacing:2px;}
-.home{max-width:500px;}
-.home p{line-height:1.65;opacity:0.9;}
-button{background:linear-gradient(145deg,#d4af37,#b8860b);color:#1a0b2e;border:none;padding:14px 40px;font-size:18px;font-weight:bold;border-radius:50px;margin:16px 0;cursor:pointer;}
-#app{display:none;width:100%;max-width:480px;}
-#wheel{width:260px;height:260px;border-radius:50%;background:conic-gradient(#3d1a5c,#1a0b2e,#3d1a5c,#1a0b2e);border:8px solid #d4af37;margin:20px auto;transition:transform 4s cubic-bezier(0.17,0.67,0.12,0.99);position:relative;}
-#wheel::after{content:'';position:absolute;top:-18px;left:50%;transform:translateX(-50%);border-left:12px solid transparent;border-right:12px solid transparent;border-top:22px solid #d4af37;}
-#card img{width:100%;border-radius:16px;max-height:340px;object-fit:cover;box-shadow:0 10px 30px rgba(212,175,55,0.25);}
-.name{font-size:26px;color:#d4af37;margin:12px 0 8px;}
-.meaning{line-height:1.65;font-size:15.5px;}
+  body {
+    margin: 0;
+    background: #0f0a1e;
+    color: #f5e6c8;
+    font-family: 'Georgia', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  h1 { color: #d4af37; text-align: center; }
+  .home, .spinner { text-align: center; max-width: 500px; }
+  button {
+    background: #d4af37;
+    color: #0f0a1e;
+    border: none;
+    padding: 12px 28px;
+    font-size: 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    margin: 15px;
+  }
+  #card {
+    margin-top: 30px;
+    background: #1a122b;
+    border: 3px solid #d4af37;
+    border-radius: 16px;
+    padding: 20px;
+    max-width: 400px;
+  }
+  #card img {
+    width: 100%;
+    max-width: 320px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+  }
+  #animal-name {
+    font-size: 28px;
+    color: #d4af37;
+    margin: 10px 0;
+  }
+  #meaning {
+    font-size: 16px;
+    line-height: 1.6;
+    text-align: left;
+  }
+  .hidden { display: none; }
 </style>
 </head>
 <body>
+
 <div class="home" id="home">
-  <h1>ANIMAL TOTEM SPINNER</h1>
-  <p>Welcome. Before you begin, please read the instruction PDF that came with this app. It explains how to use the spinner and get the most from your animal totem readings.</p>
-  <p>When you’re ready, press the button below to start.</p>
+  <h1>Animal Totem Spinner</h1>
+  <p>The animal totem meanings in this spinner are from Carly van Heerden’s book <em>Animal Totems and Spirit Animals; the Shamanic Approach</em>, first published in 2014.</p>
+  <p>Please read the instruction PDF before beginning.</p>
   <button onclick="startApp()">BEGIN</button>
 </div>
 
-<div id="app">
-  <h1>ANIMAL TOTEM SPINNER</h1>
-  <div id="wheel"></div>
-  <div id="card"></div>
+<div class="spinner hidden" id="spinner">
+  <h1>Spin for Your Totem</h1>
   <button onclick="spin()">SPIN</button>
-  <button onclick="goHome()" style="background:#333;color:#fff;font-size:14px;padding:10px 20px;">Home</button>
+  <div id="card" class="hidden">
+    <img id="animal-img" src="" alt="Animal Totem">
+    <div id="animal-name"></div>
+    <div id="meaning"></div>
+  </div>
 </div>
 
 <script>
 const totems = [
-{name:"The Alligator", meaning:"The alligator is known for its maternal potential, having strong survival instincts, and is a master of stealth. They are also respected for their quick movements during ambush, during which they are notably aggressive.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Anteater", meaning:"The anteater is known as being lethargic in movement, highly curious, and is characterized as being noisy. They show little fear and are not afraid to explore, or to be seen or heard.", image:"https://images.unsplash.com/photo-1543946207-39bd91e70ca7?w=800&q=80"},
-{name:"The Antelope", meaning:"Antelope are known for being agile and active. They tend to jump or leap when they run, and are also noted for their willingness to make sacrifices and take action.", image:"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80"},
-{name:"The Armadillo", meaning:"The armadillo is noted as being grounded with boundaries. They are concerned with their safety and with self-protection.", image:"https://images.unsplash.com/photo-1591824438708-ce405f36ba3d?w=800&q=80"},
-{name:"The Badger", meaning:"The badger is courageous, and this courage can border on aggression when manifested in certain situations. They are strong-willed, and could even be termed passionate. They have healing potentials and can channel energies effectively, yet may have issues when it comes to relating with others. Hence, they usually stay close to their relatives.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Bat", meaning:"The bat is somewhat mysterious, which emphasizes the element of secrecy. They are associated with rebirth, transition and change on a personal and spiritual level. They have extremely good hearing. They are noted for their longevity and their ability to initiate opportunities that lead to improvements.", image:"https://images.unsplash.com/photo-1564349683136-77e08dba1ef7?w=800&q=80"},
-{name:"The Bear", meaning:"Bears are strongly associated with self-preservation, will-power, sovereignty, courage and physical strength. Their gentle natures represent healing and love. Bears are known for being industrious and introspective. They are also respected as guardians.", image:"https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?w=800&q=80"},
-{name:"The Beaver", meaning:"Beavers are noted for their determination and strong will. Being tenacious builders, they are associated with goal achievement. They are also protective and watchful.", image:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"},
-{name:"The Boar", meaning:"The boar symbolizes prosperity, spiritual strength and self-reliance. They are fearless and organized, and have healing potential.", image:"https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=800&q=80"},
-{name:"The Buffalo", meaning:"The buffalo is sacred. It is one of the only animals that represent abundance in life. They are associated with gratitude and appreciation. They are noted as having healing potential, as well as the potential to bring good fortune. They are also associated with self-sufficiency.", image:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80"},
-{name:"The Butterfly", meaning:"Butterflies symbolize the magic of metamorphosis. They therefore represent transformation and persistence. Due to their beauty, they represent joy and harmony. They are also associated with the willingness to accept change. They therefore also represent balance.", image:"https://images.unsplash.com/photo-1484424057914-7b2a3e1a0d1e?w=800&q=80"},
-{name:"The Caribou", meaning:"Caribous are noted for being long distance travelers. They therefore represent mobility, and can adapt to adverse environments. They are also known to stay together, and prefer to be nomadic as a herd.", image:"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=80"},
-{name:"The Cat (domestic)", meaning:"Cats are noted for their mysterious behavior. They are associated with magic, the supernatural, and sensuality. They are also known for being unpredictable, independent and autonomous. They prefer to live a life of detachment, yet are seen as guardians.", image:"https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=80"},
-{name:"The Cheetah", meaning:"Cheetahs are noted for their maternal behavior. They are respected for their ability to concentrate and focus. Cheetahs are highly flexible and have the insight needed to resolve their circumstances.", image:"https://images.unsplash.com/photo-1456926631375-92c8ce872def?w=800&q=80"},
-{name:"The Cougar", meaning:"Cougars are seen as courageous leaders. They are associated with the power of balance. They are noted for their gentleness, honesty and loyalty. They are also noted for their potentials relating to foresight and fortitude.", image:"https://images.unsplash.com/photo-1456926631375-92c8ce872def?w=800&q=80"},
-{name:"The Coyote", meaning:"The coyote is known for its charm, humorous characteristics, and is noted as being a trickster. They are highly intelligent, wise and innocent. They are quick to realize their mistakes. They are masters of stealth and are often termed 'mischief makers'.", image:"https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=800&q=80"},
-{name:"The Crane", meaning:"Cranes represent solitude, longevity and vigilance. They are noted as being highly independent and their stature represents justice. They are also respected for their determination during migration, and are associated with the initiation of the change from summer into winter.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Crow", meaning:"Crows are respected as the keepers of sacred law. They are seen as messengers with the ability to shape-shift or change form. They are associated with the power of the intellect. They represent lawfulness and justice, and the gateway to the supernatural. They are noted for forming strong communities that exhibit spiritual strength, energy, creativity and balance. They are also associated with the power of illusion and magic.", image:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"},
-{name:"The Deer", meaning:"The deer is one of the only animals that fully represents compassion, gentleness, kindness and grace. They are associated with subtlety, peace, innocence and the beauty of nature. They are also associated with the power of the intellect and femininity.", image:"https://images.unsplash.com/photo-1484406566174-9da000fda645?w=800&q=80"},
-{name:"The Dog (domestic)", meaning:"Dogs are noted as being noble. They are appreciated for their loyalty, protection and guidance. They represent selflessness, companionship, faithfulness and true love.", image:"https://images.unsplash.com/photo-1552053831-71594a27632d?w=800&q=80"},
-{name:"The Dolphin", meaning:"Dolphins are respected for their intelligence and wisdom. They are family-orientated, and stick together for most of their lives. They are a symbol of happiness, playfulness, joy, salvation and harmony. They show us how to be compassionate and kind through our life journey. They also represent the rhythm, breath, and the life force that runs through every living being. They are capable of deep emotion.", image:"https://images.unsplash.com/photo-1607153333879-c174d265f1d2?w=800&q=80"},
-{name:"The Dove", meaning:"The dove is seen as a cross-world communicator; a spirit messenger. They represent peace, love, gentleness and kindness.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Duck", meaning:"The duck is associated with the power of water and the ability to see and deal with emotions; their own and in others. These emotions are those less seen by others - turbulent emotions, insecurity and intense emotions; and are like rough waters which the duck can float over.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Eagle", meaning:"The eagle is closely associated with the divine spirit. They are intelligent, balanced, courageous and prepared to take risks and make sacrifices. They represent the connection to the creator and higher realms, and are respected for their strength. They have healing potential and are also associated with renewal and vision. They are appreciated for their ability to represent true freedom.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Elephant", meaning:"The elephant is a symbol of strength and wisdom. They are respected for their close family bonds; their affection, loyalty and their ability to care and love unconditionally. They are dignified and represent the power of enlightenment.", image:"https://images.unsplash.com/photo-1557050543-4d5f4e07ef46?w=800&q=80"},
-{name:"The Elk", meaning:"The elk is a symbol of strength, pride and power. They are majestic, noble and independent. They have immense stamina and are agile. They also represent purification.", image:"https://images.unsplash.com/photo-1484406566174-9da000fda645?w=800&q=80"},
-{name:"The Falcon", meaning:"The falcon represents the spirit of adventure. Falcons are seen as guardians and leaders. They are passionate, perceptive and are associated with new beginnings.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Fox", meaning:"The fox is respected for its ability to adapt and integrate. They are well camouflaged and are therefore associated with invisibility. They are diplomatic and observant, as well as cunning and slightly devious. They are associated with the unseen magic of femininity. They are also quick witted and agile, with a wild nature.", image:"https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=800&q=80"},
-{name:"The Frog", meaning:"The frog is a symbol of rebirth. They represent the cleansing power of water and transformation through tears. They are highly sensitive and are associated with peace, adaptation and hidden beauty. They are respected for their medicinal potential. They tend to make poor character judgments and lack power. They are also symbolic of spiritual growth.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Giraffe", meaning:"The giraffe is noted for its far-sightedness, which relates to intuition and communication. They represent meditation, centeredness and the ability to attain the unreachable.", image:"https://images.unsplash.com/photo-1547721064-da6cfb341d50?w=800&q=80"},
-{name:"The Goat", meaning:"Goats are noted for their sure-footing, diligence and tenacity. However, they are also noted as being stubborn. They are also highly independent.", image:"https://images.unsplash.com/photo-1524024973431-2ad916746881?w=800&q=80"},
-{name:"The Goose", meaning:"The goose is noted for its strong paternal nature. They are productive and reliable. They are also vigilant and prudent. They symbolize safe return and the love for home. They are also noted as being self-demanding.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Gorilla", meaning:"Gorillas are respected for being family-orientated. They are seen to keep the peace through aggression. They are highly-intelligent and also represent strength. They are seen as environmental protectors.", image:"https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?w=800&q=80"},
-{name:"The Hawk", meaning:"The hawk is seen as a messenger of truth with strong foresight. They are noble and persistent. They represent intuition, recollection, cleansing and healing. They are also associated with visionary power and integrity. They are seen as guardians and are associated with illumination.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Hippopotamus", meaning:"The hippopotamus is noted for its power. It is respected for its ability to adapt. It is associated with creation and the imagination. It is also noted for its willingness. However, the hippopotamus is also seen as being an aggressive creature, using aggression as a means to protect what is rightfully theirs.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Horse", meaning:"The horse is a true symbol of freedom and stamina. They represent spiritual power and intuition. They are associated with mobility, land travel, and are respected as the carriers of burdens. They are also appreciated for their charisma.", image:"https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800&q=80"},
-{name:"The Hummingbird", meaning:"Hummingbirds are seen as messengers that bring messages associated with pure love, joy and happiness. They are incredibly receptive and don't tire easily. They are also associated with timelessness and have been seen as warriors with the power to heal. They also represent the celebration of life.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Jaguar", meaning:"The jaguar is associated with power. It represents communication and flexibility. Jaguars are also noted for their presence amongst chaos and their ability to remain steadfast, even if it means turning to aggression. They are also noted as being shape-shifters.", image:"https://images.unsplash.com/photo-1456926631375-92c8ce872def?w=800&q=80"},
-{name:"The Kangaroo", meaning:"The kangaroo represents forward motion and progression. They are noted for their stamina, swiftness and balance. They are highly focused and are also associated with creativity and elusiveness.", image:"https://images.unsplash.com/photo-1543946207-39bd91e70ca7?w=800&q=80"},
-{name:"The Lion", meaning:"Lions are noted as being family-orientated animals. They represent strength and courage, as well as pride. They are noble yet can be cunning. They also represent achievement, leadership and teamwork. They are also seen as guardians and protectors.", image:"https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&q=80"},
-{name:"The Llama", meaning:"The llama's main purpose is to bring comfort to others, creating a sense of security.", image:"https://images.unsplash.com/photo-1524024973431-2ad916746881?w=800&q=80"},
-{name:"The Mole", meaning:"The mole represents searching. It is seen as a guide through the darkness and is noted for its super-sensitivity.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Monkey", meaning:"The monkey is respected for its ability to change its environment. It is noted for its genius potential and intelligence. Monkeys are known for being social and adaptable. They are associated with health and success.", image:"https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?w=800&q=80"},
-{name:"The Moose", meaning:"The moose represents longevity and wisdom. It is closely associated with self-esteem, assertiveness and steadfastness. They are noted for being headstrong.", image:"https://images.unsplash.com/photo-1484406566174-9da000fda645?w=800&q=80"},
-{name:"The Mouse", meaning:"Mice are highly organized and have a good eye for detail. They represent order and scrutiny. They are highly resourceful and persistent, yet cautious. They are associated with success.", image:"https://images.unsplash.com/photo-1425082661705-1834bfd09dca?w=800&q=80"},
-{name:"The Opossum", meaning:"The opossum is noted as being a clever deceiver. They are strategists with the ability to create diversions. They are noted for their appearance and are highly practical.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Otter", meaning:"Otters represent the power of balanced feminine energy, and Earth and water. They are sharing, dynamic creatures. Otters are associated with playfulness, friendship, helpfulness and joy.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Owl", meaning:"Owls are known as being clairvoyants. They are respected for their wisdom and the knowledge they hold. They are seen as omens that can initiate spiritual awaking. They are noted for their insight and also have the ability to be deceptive if necessary.", image:"https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=800&q=80"},
-{name:"The Parrot", meaning:"The parrot represents communication, diplomacy and negotiation. They are also noted for their beauty. They are seen as bringers of essential rain and seed. They are seen as guides to wisdom that have also mastered the art of mockery, and are known to think before they speak.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Peacock", meaning:"The peacock represents dignity and self-confidence. They are associated with immortality. They also represent recognition and are self-assured and proud.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Pelican", meaning:"The pelican is a symbol of abundance and plenty. They are highly resilient and unselfish. They are therefore noted for their ability to rise above adverse conditions.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Penguin", meaning:"The penguin is seen as a walker between worlds. They are known to work in teams and are family-orientated. They are balanced, patient and self-confident. They represent self-discipline, grace and spirituality.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Porcupine", meaning:"The porcupine is a symbol of innocence and trust. They represent true companionship and wonder. They are incorruptible and gentle. They are also a symbol of self-protection.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Rabbit", meaning:"Rabbits have long been a symbol of fertility and good luck. They represent the ability to overcome fears and limiting beliefs. They are also associated with rebirth. Rabbits are timid, often nervous, and have learnt the lessons of humility. They are also noted for their quick movements and ability to trick predators.", image:"https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=800&q=80"},
-{name:"The Raccoon", meaning:"Raccoons are noted for their curiosity and inquisitiveness. They are associated with intuition and awareness. They also enjoy cleanliness and are skilled seekers.", image:"https://images.unsplash.com/photo-1497752531616-c3afd9760a11?w=800&q=80"},
-{name:"The Ram", meaning:"The ram represents strength and determination. They are sensitive and are noted for their ability to persevere. They are also associated with the imagination and are highly curious.", image:"https://images.unsplash.com/photo-1524024973431-2ad916746881?w=800&q=80"},
-{name:"The Raven", meaning:"The raven is a symbol of introspection. They are known as the bringers of magic and light, and are associated with creation and the knowledge thereof. They are courageous and self-knowledgeable.", image:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"},
-{name:"The Rhinoceros", meaning:"The rhinoceros is a solitary creature. They symbolize inner and ancient wisdom. They are associated with durability. They are insightful, patient and solid.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Road-runner", meaning:"The road-runner is noted for its agility and speed. This relates to mental agility, and teaches others to embrace their opportunities.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Salmon", meaning:"The salmon is dependent on its own strength. They symbolize renewal and inspiration. They are also associated with pride, confidence and wisdom, and are seen to be knowledgeable about the intensities of life.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Seagull", meaning:"The seagull is noted for its easy-going nature and its ability to make itself heard. They are associated with laziness and a carefree attitude. They are also associated with creativity and freedom, and are noted for their versatility.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Seahorse", meaning:"The seahorse is a symbol of confidence, representing ethereality and distinctiveness. They are appreciated for their grace and are known to bring good luck. They are also associated with the strengths required in fatherhood.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Seal", meaning:"The seal is a symbol of the dream world. They are associated with active imagination and creativity. They also represent contentment. They are inquisitive and organized. They are also associated with love, longing and the dilemmas involved with both.", image:"https://images.unsplash.com/photo-1559253664-ca249d4608c6?w=800&q=80"},
-{name:"The Shark", meaning:"Sharks are hunters with keen senses. They adapt easily to their surroundings and are respected for their methods of survival. They are also respected for their stamina and their ability to travel long distances in search of resources.", image:"https://images.unsplash.com/photo-1560275619-4662e36fa65c?w=800&q=80"},
-{name:"The Skunk", meaning:"The skunk is associated with reputation and repulsion. They are cautious yet highly confident. They are noted for their self-defense mechanisms and for their ability to make their presence known. They are also noted for their strength, considering their size.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Snake", meaning:"Snakes are ultimately symbols of transformation. They show initiative and are therefore associated with creativity, rebirth and wisdom. They are associated with impulsiveness and shrewdness. They are also intelligent. They represent transmutation, the power of life's cycles and the power of the life-force. They are also symbolic of sexual potency. Due to their wisdom they are also aware of their limitations.", image:"https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=800&q=80"},
-{name:"The Spider", meaning:"The spider is a symbol of creativity and communication; the web of life. They represent balance, talent and the wisdom behind symbolism. They are noted as being able to weave a story.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Squirrel", meaning:"The squirrel is noted as being a self-sufficient gatherer. They are respected for their planning potentials and foresight. They are therefore associated with preparation. They are also clever, attentive and can thrive under most conditions.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Stag", meaning:"The stag is seen as the lord of the forest. It represents masculine power and the power of regeneration. They are also associated with signs in life that lead others to learn life's lesson.", image:"https://images.unsplash.com/photo-1484406566174-9da000fda645?w=800&q=80"},
-{name:"The Swan", meaning:"The swan is symbolic of a creature's will to surrender to a universal plan. It represents grace, love, beauty and innocence, and represents the soul and its connection to the Great Spirit. They are sensitive creatures that also represent balance.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Tiger", meaning:"The tiger is respected for its absolute strength. It is a symbol of power, and represents the energy in passion and fire. It is also associated with forcefulness fueled by good intent.", image:"https://images.unsplash.com/photo-1561731216-c3a4d99437d5?w=800&q=80"},
-{name:"The Turkey", meaning:"The turkey is a strong symbol of generosity. They are associated with sharing and self-sacrifice. They are seen as life-givers.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Turtle", meaning:"The turtle is symbolic of Mother Earth. They are nurturing and protective creatures. They tend to be shy and therefore also represent temperance. They are also associated with fertility and harmony.", image:"https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=800&q=80"},
-{name:"The Weasel", meaning:"Weasels are associated with stealth. They are noted as information gatherers that possess the ingenuity needed to see themselves through life. They are also associated with strength and energy.", image:"https://images.unsplash.com/photo-1504006833117-8886a355efbf?w=800&q=80"},
-{name:"The Whale", meaning:"The whale is a symbol of wisdom, and is seen as a historical record-keeper. They are gentle and kind, as well as intelligent. They are seen as providers with strong intuition. They are noted for their clairaudience, and are seen as guardians. They are also respected for their ability to travel long distances.", image:"https://images.unsplash.com/photo-1568430462989-44163eb1752f?w=800&q=80"},
-{name:"The Wolf", meaning:"The wolf represents loyalty with the correct balance of independence. They are noted for their perseverance and spirit. They are associated with success and freedom. They are also seen as wise teachers of new ideas, and are pathfinders. They also represent camaraderie. They are also noted for being highly decisive.", image:"https://images.unsplash.com/photo-1560807707-8cc77767d783?w=800&q=80"},
-{name:"The Woodpecker", meaning:"The woodpecker is respected for its persistence. They are highly protective and devoted. They are associated with change.", image:"https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=800&q=80"},
-{name:"The Zebra", meaning:"Zebras are respected for their ability to form close communities. Within these communities they develop their independence and individuality. They are also noted for their strong sense of diplomacy.", image:"https://images.unsplash.com/photo-1526095179574-86e545346ae6?w=800&q=80"}
+  { name: "Alligator", meaning: "The alligator is known for its maternal potential, having strong survival instincts, and is a master of stealth. They are also respected for their quick movements during ambush, during which they are notably aggressive.", image: "alligator.jpg" },
+  { name: "Anteater", meaning: "The anteater is known as being lethargic in movement, highly curious, and is characterized as being noisy. They show little fear and are not afraid to explore, or to be seen or heard.", image: "anteater.jpg" },
+  { name: "Antelope", meaning: "Antelope are known for being agile and active. They tend to jump or leap when they run, and are also noted for their willingness to make sacrifices and take action.", image: "antelope.jpg" },
+  { name: "Armadillo", meaning: "The armadillo is noted as being grounded with boundaries. They are concerned with their safety and with self-protection.", image: "armadillo.jpg" },
+  { name: "Badger", meaning: "The badger is courageous, and this courage can border on aggression when manifested in certain situations. They are strong-willed, and could even be termed passionate. They have healing potentials and can channel energies effectively, yet may have issues when it comes to relating with others. Hence, they usually stay close to their relatives.", image: "badger.jpg" },
+  { name: "Bat", meaning: "The bat is somewhat mysterious, which emphasizes the element of secrecy. They are associated with rebirth, transition and change on a personal and spiritual level. They have extremely good hearing. They are noted for their longevity and their ability to initiate opportunities that lead to improvements.", image: "bat.jpg" },
+  { name: "Bear", meaning: "Bears are strongly associated with self-preservation, will-power, and strength. They are protective and have healing abilities.", image: "bear.jpg" },
+  { name: "Beaver", meaning: "The beaver is known for its determination and hard work. They are builders and creators who shape their environment.", image: "beaver.jpg" },
+  { name: "Boar", meaning: "The boar represents courage and strength. They are fearless and confront challenges directly.", image: "boar.jpg" },
+  { name: "Buffalo", meaning: "The buffalo is a symbol of abundance, gratitude, and sacred life. They are providers and teachers of respect.", image: "buffalo.jpg" },
+  { name: "Butterfly", meaning: "The butterfly symbolizes transformation, joy, and the beauty of change. They remind us of the cycles of life.", image: "butterfly.jpg" },
+  { name: "Caribou", meaning: "The caribou is associated with travel, endurance, and following one’s path with determination.", image: "caribou.jpg" },
+  { name: "Cat", meaning: "The cat is independent, intuitive, and mysterious. They are associated with magic and self-reliance.", image: "cat.jpg" },
+  { name: "Cheetah", meaning: "The cheetah represents speed, focus, and the ability to move quickly toward goals.", image: "cheetah.jpg" },
+  { name: "Cougar", meaning: "The cougar is a symbol of leadership, courage, and personal power.", image: "cougar.jpg" },
+  { name: "Coyote", meaning: "The coyote is the trickster, clever and adaptable, teaching us about balance and humor.", image: "coyote.jpg" },
+  { name: "Crane", meaning: "The crane represents longevity, grace, and spiritual wisdom.", image: "crane.jpg" },
+  { name: "Crow", meaning: "The crow is a messenger and a symbol of intelligence, mystery, and transformation.", image: "crow.jpg" },
+  { name: "Deer", meaning: "The deer is gentle, graceful, and associated with sensitivity, intuition, and new beginnings.", image: "deer.jpg" },
+  { name: "Dog", meaning: "The dog represents loyalty, protection, and unconditional love.", image: "dog.jpg" },
+  { name: "Dolphin", meaning: "The dolphin is joyful, intelligent, and a symbol of communication and harmony.", image: "dolphin.jpg" },
+  { name: "Dove", meaning: "The dove is a symbol of peace, purity, and spiritual messages.", image: "dove.jpg" },
+  { name: "Duck", meaning: "The duck represents emotional comfort, adaptability, and the ability to navigate feelings.", image: "duck.jpg" },
+  { name: "Eagle", meaning: "The eagle is a powerful symbol of vision, freedom, and spiritual connection.", image: "eagle.jpg" },
+  { name: "Elephant", meaning: "The elephant represents wisdom, strength, loyalty, and memory.", image: "elephant.jpg" },
+  { name: "Elk", meaning: "The elk is associated with stamina, pride, and the ability to move through challenges with grace.", image: "elk.jpg" },
+  { name: "Falcon", meaning: "The falcon symbolizes focus, precision, and higher vision.", image: "falcon.jpg" },
+  { name: "Fox", meaning: "The fox is clever, adaptable, and a master of camouflage and strategy.", image: "fox.jpg" },
+  { name: "Frog", meaning: "The frog represents cleansing, renewal, and emotional healing.", image: "frog.jpg" },
+  { name: "Giraffe", meaning: "The giraffe is associated with vision, grace, and the ability to see the bigger picture.", image: "giraffe.jpg" },
+  { name: "Goat", meaning: "The goat symbolizes determination, sure-footedness, and the ability to climb to new heights.", image: "goat.jpg" },
+  { name: "Goose", meaning: "The goose represents loyalty, communication, and the importance of community.", image: "goose.jpg" },
+  { name: "Gorilla", meaning: "The gorilla is a symbol of strength, leadership, and gentle power.", image: "gorilla.jpg" },
+  { name: "Hawk", meaning: "The hawk represents clear vision, focus, and spiritual messages.", image: "hawk.jpg" },
+  { name: "Hippopotamus", meaning: "The hippopotamus is associated with emotional depth, protection, and hidden strength.", image: "hippopotamus.jpg" },
+  { name: "Horse", meaning: "The horse symbolizes freedom, power, and the journey of the spirit.", image: "horse.jpg" },
+  { name: "Hummingbird", meaning: "The hummingbird represents joy, resilience, and the ability to find sweetness in life.", image: "hummingbird.jpg" },
+  { name: "Jaguar", meaning: "The jaguar is a powerful symbol of strength, mystery, and the ability to move between worlds.", image: "jaguar.jpg" },
+  { name: "Kangaroo", meaning: "The kangaroo represents forward movement, balance, and nurturing.", image: "kangaroo.jpg" },
+  { name: "Lion", meaning: "The lion is a symbol of courage, leadership, and personal power.", image: "lion.jpg" },
+  { name: "Llama", meaning: "The llama represents endurance, community, and the ability to carry burdens with grace.", image: "llama.jpg" },
+  { name: "Mole", meaning: "The mole is associated with sensitivity, intuition, and the ability to navigate the unseen.", image: "mole.jpg" },
+  { name: "Monkey", meaning: "The monkey symbolizes playfulness, intelligence, and adaptability.", image: "monkey.jpg" },
+  { name: "Moose", meaning: "The moose represents self-esteem, strength, and the ability to stand tall.", image: "moose.jpg" },
+  { name: "Mouse", meaning: "The mouse is a symbol of attention to detail, scrutiny, and the power of the small.", image: "mouse.jpg" },
+  { name: "Opossum", meaning: "The opossum represents strategy, diversion, and the ability to use cleverness for protection.", image: "opossum.jpg" },
+  { name: "Otter", meaning: "The otter is joyful, playful, and a symbol of sharing and community.", image: "otter.jpg" },
+  { name: "Owl", meaning: "The owl is a symbol of wisdom, intuition, and the ability to see what others cannot.", image: "owl.jpg" },
+  { name: "Parrot", meaning: "The parrot represents communication, color, and the power of voice.", image: "parrot.jpg" },
+  { name: "Peacock", meaning: "The peacock is a symbol of beauty, confidence, and spiritual vision.", image: "peacock.jpg" },
+  { name: "Pelican", meaning: "The pelican represents self-sacrifice, generosity, and unselfish love.", image: "pelican.jpg" },
+  { name: "Penguin", meaning: "The penguin symbolizes adaptability, community, and the ability to thrive in challenging environments.", image: "penguin.jpg" },
+  { name: "Porcupine", meaning: "The porcupine represents innocence, trust, and the ability to protect oneself gently.", image: "porcupine.jpg" },
+  { name: "Rabbit", meaning: "The rabbit is a symbol of fertility, abundance, and overcoming fear.", image: "rabbit.jpg" },
+  { name: "Raccoon", meaning: "The raccoon represents curiosity, resourcefulness, and the ability to find what is hidden.", image: "raccoon.jpg" },
+  { name: "Ram", meaning: "The ram is a symbol of determination, leadership, and the courage to charge forward.", image: "ram.jpg" },
+  { name: "Raven", meaning: "The raven is a powerful messenger of magic, transformation, and mystery.", image: "raven.jpg" },
+  { name: "Rhinoceros", meaning: "The rhinoceros represents strength, solitude, and the power of conviction.", image: "rhinoceros.jpg" },
+  { name: "Roadrunner", meaning: "The roadrunner is a symbol of speed, mental agility, and the ability to outmaneuver challenges.", image: "roadrunner.jpg" },
+  { name: "Salmon", meaning: "The salmon represents determination, wisdom, and the courage to swim upstream.", image: "salmon.jpg" },
+  { name: "Seagull", meaning: "The seagull is a symbol of freedom, versatility, and the ability to thrive in different environments.", image: "seagull.jpg" },
+  { name: "Seahorse", meaning: "The seahorse represents patience, protection, and the beauty of uniqueness.", image: "seahorse.jpg" },
+  { name: "Seal", meaning: "The seal is associated with imagination, creativity, and emotional balance.", image: "seal.jpg" },
+  { name: "Shark", meaning: "The shark represents survival, adaptability, and the power of instinct.", image: "shark.jpg" },
+  { name: "Skunk", meaning: "The skunk is a symbol of self-respect, confidence, and the ability to set boundaries.", image: "skunk.jpg" },
+  { name: "Snake", meaning: "The snake represents transformation, healing, and the shedding of the old to make way for the new.", image: "snake.jpg" },
+  { name: "Spider", meaning: "The spider is a symbol of creativity, patience, and the weaving of one’s destiny.", image: "spider.jpg" },
+  { name: "Squirrel", meaning: "The squirrel represents preparation, resourcefulness, and the balance of work and play.", image: "squirrel.jpg" },
+  { name: "Stag", meaning: "The stag is a symbol of strength, nobility, and spiritual leadership.", image: "stag.jpg" },
+  { name: "Swan", meaning: "The swan represents grace, beauty, and the ability to navigate emotions with elegance.", image: "swan.jpg" },
+  { name: "Tiger", meaning: "The tiger is a powerful symbol of passion, strength, and personal will.", image: "tiger.jpg" },
+  { name: "Turkey", meaning: "The turkey represents generosity, abundance, and the sharing of gifts.", image: "turkey.jpg" },
+  { name: "Turtle", meaning: "The turtle is symbolic of Mother Earth. They are nurturing and protective creatures. They tend to be shy and therefore also represent temperance. They are also associated with fertility and harmony.", image: "turtle.jpg" },
+  { name: "Weasel", meaning: "Weasels are associated with stealth. They are noted as information gatherers that possess the ingenuity needed to see themselves through life. They are also associated with strength and energy.", image: "weasel.jpg" },
+  { name: "Whale", meaning: "The whale is a symbol of wisdom, and is seen as a historical record-keeper. They are gentle and kind, as well as intelligent. They are seen as providers with strong intuition. They are noted for their clairaudience, and are seen as guardians. They are also respected for their ability to travel long distances.", image: "whale.jpg" },
+  { name: "Wolf", meaning: "The wolf represents loyalty with the correct balance of independence. They are noted for their perseverance and spirit. They are associated with success and freedom. They are also seen as wise teachers of new ideas, and are pathfinders. They also represent camaraderie. They are also noted for being highly decisive.", image: "wolf.jpg" },
+  { name: "Woodpecker", meaning: "The woodpecker is respected for its persistence. They are highly protective and devoted. They are associated with change.", image: "woodpecker.jpg" },
+  { name: "Zebra", meaning: "Zebras are respected for their ability to form close communities. Within these communities they develop their independence and individuality. They are also noted for their strong sense of diplomacy.", image: "zebra.jpg" }
 ];
 
-function startApp(){document.getElementById('home').style.display='none';document.getElementById('app').style.display='block';}
-function goHome(){document.getElementById('app').style.display='none';document.getElementById('home').style.display='block';}
-function spin(){
-  const wheel=document.getElementById('wheel');
-  const deg=1440+Math.random()*360;
-  wheel.style.transform=`rotate(${deg}deg)`;
-  setTimeout(()=>{
-    const t=totems[Math.floor(Math.random()*totems.length)];
-    document.getElementById('card').innerHTML=`<img src="${t.image}" alt="${t.name}"><div class="name">${t.name}</div><div class="meaning">${t.meaning}</div>`;
-  },4000);
+function startApp() {
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('spinner').classList.remove('hidden');
+}
+
+function spin() {
+  const card = document.getElementById('card');
+  card.classList.add('hidden');
+  setTimeout(() => {
+    const totem = totems[Math.floor(Math.random() * totems.length)];
+    document.getElementById('animal-img').src = totem.image;
+    document.getElementById('animal-name').textContent = totem.name;
+    document.getElementById('meaning').textContent = totem.meaning;
+    card.classList.remove('hidden');
+  }, 400);
 }
 </script>
 </body>
